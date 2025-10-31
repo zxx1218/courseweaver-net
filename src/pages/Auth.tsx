@@ -34,18 +34,33 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { data: profile } = await supabase
+      // 从users表中验证用户名和密码
+      const { data: user, error: queryError } = await supabase
         .from("users")
-        .select("id")
+        .select("id, password")
         .eq("username", loginData.username)
-        .single();
+        .maybeSingle();
 
-      if (!profile) {
+      if (queryError) {
+        toast.error("查询用户信息失败");
+        setLoading(false);
+        return;
+      }
+
+      if (!user) {
         toast.error("用户名不存在");
         setLoading(false);
         return;
       }
 
+      // 验证密码是否匹配
+      if (user.password !== loginData.password) {
+        toast.error("密码错误");
+        setLoading(false);
+        return;
+      }
+
+      // 密码验证通过，使用Supabase Auth登录
       const { data, error } = await supabase.auth.signInWithPassword({
         email: `${loginData.username}@system.local`,
         password: loginData.password,
