@@ -45,7 +45,7 @@ export type Database = {
             foreignKeyName: "course_permissions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -118,23 +118,32 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
+      users: {
         Row: {
           created_at: string | null
           full_name: string | null
           id: string
+          organization: string | null
+          password: string | null
+          phone: string | null
           username: string
         }
         Insert: {
           created_at?: string | null
           full_name?: string | null
           id: string
+          organization?: string | null
+          password?: string | null
+          phone?: string | null
           username: string
         }
         Update: {
           created_at?: string | null
           full_name?: string | null
           id?: string
+          organization?: string | null
+          password?: string | null
+          phone?: string | null
           username?: string
         }
         Relationships: []

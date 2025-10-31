@@ -15,9 +15,10 @@ const Auth = () => {
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [signupData, setSignupData] = useState({ 
     username: "", 
-    email: "", 
     password: "", 
-    fullName: "" 
+    fullName: "",
+    organization: "",
+    phone: ""
   });
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const Auth = () => {
 
     try {
       const { data: profile } = await supabase
-        .from("profiles")
+        .from("users")
         .select("id")
         .eq("username", loginData.username)
         .single();
@@ -75,6 +76,9 @@ const Auth = () => {
           data: {
             username: signupData.username,
             full_name: signupData.fullName,
+            organization: signupData.organization,
+            phone: signupData.phone,
+            password: signupData.password,
           },
           emailRedirectTo: `${window.location.origin}/courses`,
         },
@@ -179,6 +183,33 @@ const Auth = () => {
                       onChange={(e) =>
                         setSignupData({ ...signupData, fullName: e.target.value })
                       }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-organization">所属机构</Label>
+                    <Input
+                      id="signup-organization"
+                      type="text"
+                      placeholder="请输入所属机构"
+                      value={signupData.organization}
+                      onChange={(e) =>
+                        setSignupData({ ...signupData, organization: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-phone">电话号码</Label>
+                    <Input
+                      id="signup-phone"
+                      type="tel"
+                      placeholder="请输入电话号码"
+                      value={signupData.phone}
+                      onChange={(e) =>
+                        setSignupData({ ...signupData, phone: e.target.value })
+                      }
+                      required
                     />
                   </div>
                   <div className="space-y-2">
