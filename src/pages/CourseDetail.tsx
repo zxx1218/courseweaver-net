@@ -61,10 +61,28 @@ const CourseDetail = () => {
         .order("order_index");
 
       if (resourcesError) throw resourcesError;
-      setResources((resourcesData || []) as Resource[]);
+      
+      // 为 Storage 文件生成签名 URL
+      const resourcesWithUrls = await Promise.all(
+        (resourcesData || []).map(async (resource) => {
+          // 如果 file_path 存在且是 Storage 路径，生成签名 URL
+          if (resource.file_path && !resource.file_path.startsWith('http')) {
+            const { data: urlData } = await supabase.storage
+              .from('course-resources')
+              .createSignedUrl(resource.file_path, 3600); // 1小时有效期
+            
+            if (urlData?.signedUrl) {
+              return { ...resource, file_url: urlData.signedUrl };
+            }
+          }
+          return resource;
+        })
+      );
+      
+      setResources(resourcesWithUrls as Resource[]);
 
-      if (resourcesData && resourcesData.length > 0) {
-        setSelectedResource(resourcesData[0] as Resource);
+      if (resourcesWithUrls && resourcesWithUrls.length > 0) {
+        setSelectedResource(resourcesWithUrls[0] as Resource);
       }
     } catch (error: any) {
       toast.error("加载课程详情失败: " + error.message);
