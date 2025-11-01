@@ -24,7 +24,7 @@ const Index = () => {
               <GraduationCap className="w-6 h-6 text-primary-foreground" />
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              在线培训系统
+              长藤科技-在线培训系统
             </h1>
           </div>
           <Button onClick={() => navigate("/auth")}>登录 / 注册</Button>
@@ -40,7 +40,7 @@ const Index = () => {
               </div>
             </div>
             <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              欢迎来到在线培训平台
+              欢迎来到-在线培训平台
             </h2>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
               专业的在线学习管理系统，为您提供高质量的培训课程和学习资源
@@ -88,7 +88,7 @@ const Index = () => {
 
       <footer className="border-t bg-card/50 backdrop-blur mt-20">
         <div className="container mx-auto px-4 py-8 text-center text-muted-foreground">
-          <p>© 2025 在线培训系统. All rights reserved.</p>
+          <p>© 2025 长藤科技-在线培训系统. All rights reserved.</p>
         </div>
       </footer>
     </div>
