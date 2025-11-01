@@ -53,9 +53,8 @@ const PDFViewer = ({ url }: PDFViewerProps) => {
     }
   };
 
-  // 使用 Google Docs Viewer 或 PDF.js 来防止下载
-  // 这里使用禁用下载的 iframe 方式
-  const viewerUrl = `${url}#toolbar=0&navpanes=0&scrollbar=0`;
+  // 直接使用PDF URL，但通过参数禁用工具栏
+  const viewerUrl = `${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
 
   return (
     <div ref={containerRef} className="relative w-full bg-muted rounded-lg overflow-hidden">

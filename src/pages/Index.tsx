@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, BookOpen, Video, Shield } from "lucide-react";
 
@@ -8,11 +8,18 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+    // 检查本地存储的用户会话
+    const session = localStorage.getItem('user_session');
+    if (session) {
+      const parsedSession = JSON.parse(session);
+      // 检查会话是否过期
+      if (Date.now() < parsedSession.expires_at) {
         navigate("/courses");
+      } else {
+        // 会话过期，清除本地存储
+        localStorage.removeItem('user_session');
       }
-    });
+    }
   }, [navigate]);
 
   return (

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { GraduationCap } from "lucide-react";
+
+const API_BASE_URL = 'http://localhost:3001/api/auth';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -22,11 +23,11 @@ const Auth = () => {
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/courses");
-      }
-    });
+    // 检查是否有存储的会话
+    const session = localStorage.getItem('user_session');
+    if (session) {
+      navigate("/courses");
+    }
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -34,44 +35,34 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      // 从users表中验证用户名和密码
-      const { data: user, error: queryError } = await supabase
-        .from("users")
-        .select("id, password")
-        .eq("username", loginData.username)
-        .maybeSingle();
-
-      if (queryError) {
-        toast.error("查询用户信息失败");
-        setLoading(false);
-        return;
-      }
-
-      if (!user) {
-        toast.error("用户名不存在");
-        setLoading(false);
-        return;
-      }
-
-      // 验证密码是否匹配
-      if (user.password !== loginData.password) {
-        toast.error("密码错误");
-        setLoading(false);
-        return;
-      }
-
-      // 密码验证通过，使用Supabase Auth登录
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: `${loginData.username}@system.local`,
-        password: loginData.password,
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: loginData.username,
+          password: loginData.password
+        })
       });
 
-      if (error) throw error;
+      const result = await response.json();
 
-      if (data.session) {
-        toast.success("登录成功！");
-        navigate("/courses");
+      if (!response.ok) {
+        toast.error(result.error || "登录失败");
+        setLoading(false);
+        return;
       }
+
+      // 创建会话
+      const session = {
+        user: result.user,
+        expires_at: Date.now() + 24 * 60 * 60 * 1000 // 24小时后过期
+      };
+      
+      localStorage.setItem('user_session', JSON.stringify(session));
+      toast.success("登录成功！");
+      navigate("/courses");
     } catch (error: any) {
       toast.error(error.message || "登录失败");
     } finally {
@@ -84,27 +75,37 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: `${signupData.username}@system.local`,
-        password: signupData.password,
-        options: {
-          data: {
-            username: signupData.username,
-            full_name: signupData.fullName,
-            organization: signupData.organization,
-            phone: signupData.phone,
-            password: signupData.password,
-          },
-          emailRedirectTo: `${window.location.origin}/courses`,
+      const response = await fetch(`${API_BASE_URL}/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          username: signupData.username,
+          password: signupData.password,
+          fullName: signupData.fullName,
+          organization: signupData.organization,
+          phone: signupData.phone
+        })
       });
 
-      if (error) throw error;
+      const result = await response.json();
 
-      if (data.user) {
-        toast.success("注册成功！正在跳转...");
-        setTimeout(() => navigate("/courses"), 1000);
+      if (!response.ok) {
+        toast.error(result.error || "注册失败");
+        setLoading(false);
+        return;
       }
+
+      // 创建会话
+      const session = {
+        user: result.user,
+        expires_at: Date.now() + 24 * 60 * 60 * 1000 // 24小时后过期
+      };
+      
+      localStorage.setItem('user_session', JSON.stringify(session));
+      toast.success("注册成功！正在跳转...");
+      setTimeout(() => navigate("/courses"), 1000);
     } catch (error: any) {
       toast.error(error.message || "注册失败");
     } finally {
