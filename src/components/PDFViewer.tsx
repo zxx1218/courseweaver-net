@@ -36,7 +36,6 @@ const PDFViewer = ({ url }: PDFViewerProps) => {
         className="w-full h-[600px] border-0"
         title="PDF查看器"
         onContextMenu={(e) => e.preventDefault()}
-        sandbox="allow-same-origin allow-scripts"
       />
       
       {/* 防止下载的提示 */}
