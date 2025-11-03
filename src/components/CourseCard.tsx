@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 
@@ -8,14 +9,17 @@ interface CourseCardProps {
 }
 
 const CourseCard = ({ name, description, coverImage }: CourseCardProps) => {
+  const [imageError, setImageError] = React.useState(false);
+
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
-        {coverImage ? (
+        {coverImage && !imageError ? (
           <img
             src={coverImage}
             alt={name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            onError={() => setImageError(true)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
