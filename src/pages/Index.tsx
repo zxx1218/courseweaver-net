@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 import { GraduationCap, BookOpen, Video, Shield } from "lucide-react";
 import CourseCard from "@/components/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 interface Course {
   id: string;
@@ -17,6 +25,15 @@ const Index = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // 轮播图图片列表
+  const carouselImages = [
+    "/lunbo_img/1.jpg",
+    "/lunbo_img/2.jpg",
+    "/lunbo_img/3.jpg",
+    "/lunbo_img/4.jpg",
+    "/lunbo_img/5.jpg",
+  ];
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -62,23 +79,38 @@ const Index = () => {
       </header>
 
       <main>
-        <section className="container mx-auto px-4 py-20 text-center">
-          <div className="max-w-3xl mx-auto">
-            <div className="mb-8 inline-block">
-              <div className="bg-gradient-to-br from-primary to-accent p-6 rounded-3xl shadow-2xl">
-                <GraduationCap className="w-20 h-20 text-primary-foreground" />
-              </div>
-            </div>
-            <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              欢迎来到-在线培训平台
-            </h2>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              专业的在线学习管理系统，为您提供高质量的培训课程和学习资源
-            </p>
-            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg px-8 py-6">
-              立即开始学习
-            </Button>
-          </div>
+        <section className="container mx-auto px-4 py-8">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 3000,
+              }),
+            ]}
+            className="w-full max-w-5xl mx-auto"
+          >
+            <CarouselContent>
+              {carouselImages.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative w-full aspect-[16/6] rounded-2xl overflow-hidden shadow-2xl">
+                    <img
+                      src={image}
+                      alt={`轮播图 ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='300'%3E%3Crect width='800' height='300' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%23999'%3E图片加载失败%3C/text%3E%3C/svg%3E";
+                      }}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
         </section>
 
         <section className="container mx-auto px-4 py-16">
