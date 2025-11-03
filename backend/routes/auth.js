@@ -66,17 +66,16 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: '用户名已存在' });
     }
 
-    // 创建新用户
-    const userId = uuidv4();
-    await pool.execute(
-      'INSERT INTO users (id, username, password, full_name, organization, phone) VALUES (?, ?, ?, ?, ?, ?)',
-      [userId, username, password, fullName, organization, phone]
+    // 创建新用户（不需要手动指定id，因为MySQL中id是AUTO_INCREMENT）
+    const [result] = await pool.execute(
+      'INSERT INTO users (username, password, full_name, organization, phone) VALUES (?, ?, ?, ?, ?)',
+      [username, password, fullName, organization, phone]
     );
 
     // 返回新创建的用户信息
     res.status(201).json({
       user: {
-        id: userId,
+        id: result.insertId,  // 使用数据库生成的自增ID
         username: username
       }
     });
