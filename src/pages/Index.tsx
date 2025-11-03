@@ -1,22 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, BookOpen, Video, Shield } from "lucide-react";
-import CourseCard from "@/components/CourseCard";
-import { Skeleton } from "@/components/ui/skeleton";
-
-interface Course {
-  id: string;
-  name: string;
-  description: string;
-  cover_image?: string;
-}
 
 const Index = () => {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -24,25 +13,6 @@ const Index = () => {
         navigate("/courses");
       }
     });
-
-    // Fetch courses
-    const fetchCourses = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("courses")
-          .select("id, name, description, cover_image")
-          .order("created_at", { ascending: true });
-
-        if (error) throw error;
-        setCourses(data || []);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCourses();
   }, [navigate]);
 
   return (
@@ -113,41 +83,6 @@ const Index = () => {
               </p>
             </div>
           </div>
-        </section>
-
-        <section className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              精品课程
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              探索我们的专业课程体系，开启您的学习之旅
-            </p>
-          </div>
-          
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="h-48 w-full rounded-lg" />
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  name={course.name}
-                  description={course.description || ""}
-                  coverImage={course.cover_image || undefined}
-                />
-              ))}
-            </div>
-          )}
         </section>
       </main>
 
