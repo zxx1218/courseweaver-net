@@ -88,7 +88,7 @@ const Courses = () => {
               <GraduationCap className="w-6 h-6 text-primary-foreground" />
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              在线培训系统
+              长藤科技-在线培训系统
             </h1>
           </div>
           <Button variant="outline" onClick={handleLogout}>

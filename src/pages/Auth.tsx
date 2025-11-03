@@ -122,7 +122,7 @@ const Auth = () => {
             </div>
           </div>
           <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            在线培训系统
+            长藤科技-在线培训系统
           </h1>
           <p className="text-muted-foreground">欢迎来到学习平台</p>
         </div>
