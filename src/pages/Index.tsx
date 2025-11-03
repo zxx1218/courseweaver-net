@@ -79,7 +79,7 @@ const Index = () => {
       </header>
 
       <main>
-        <section className="container mx-auto px-4 py-8">
+        <section className="container mx-auto px-4 py-12">
           <Carousel
             opts={{
               align: "start",
@@ -90,16 +90,16 @@ const Index = () => {
                 delay: 3000,
               }),
             ]}
-            className="w-full max-w-5xl mx-auto"
+            className="w-full"
           >
             <CarouselContent>
               {carouselImages.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative w-full aspect-[16/6] rounded-2xl overflow-hidden shadow-2xl">
+                  <div className="relative w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-elegant">
                     <img
                       src={image}
                       alt={`轮播图 ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                       onError={(e) => {
                         e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='300'%3E%3Crect width='800' height='300' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%23999'%3E图片加载失败%3C/text%3E%3C/svg%3E";
                       }}
@@ -108,8 +108,8 @@ const Index = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-4" />
-            <CarouselNext className="right-4" />
+            <CarouselPrevious className="left-8 h-12 w-12" />
+            <CarouselNext className="right-8 h-12 w-12" />
           </Carousel>
         </section>
 
