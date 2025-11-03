@@ -28,11 +28,9 @@ const Index = () => {
   
   // 轮播图图片列表
   const carouselImages = [
-    "/lunbo_img/1.jpg",
-    "/lunbo_img/2.jpg",
-    "/lunbo_img/3.jpg",
-    "/lunbo_img/4.jpg",
-    "/lunbo_img/5.jpg",
+    "lunbo_img/1.png",
+    "lunbo_img/2.png",
+    "lunbo_img/3.png"
   ];
 
   useEffect(() => {
