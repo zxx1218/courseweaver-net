@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CourseCardProps {
@@ -9,9 +10,17 @@ interface CourseCardProps {
 
 const CourseCard = ({ name, description, coverImage }: CourseCardProps) => {
   const [imageError, setImageError] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/auth");
+  };
 
   return (
-    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+    <Card 
+      className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer" 
+      onClick={handleClick}
+    >
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
         {coverImage && !imageError ? (
           <img
