@@ -85,6 +85,31 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// 获取示例课程列表（用于首页展示），一定要放在‘获取用户课程列表’接口的前面，因为路由遵循先匹配先使用，会把sample当作courseId处理
+router.get('/courses/sample', async (req, res) => {
+  try {
+    // 查询所有课程
+    const [courses] = await pool.execute(`
+      SELECT id, name, description, cover_image 
+      FROM courses 
+      ORDER BY created_at DESC
+    `);
+    
+    // 确保返回的数据格式正确
+    const formattedCourses = courses.map(course => ({
+      id: course.id.toString(),
+      name: course.name,
+      description: course.description,
+      cover_image: course.cover_image
+    }));
+    
+    res.json(formattedCourses);
+  } catch (error) {
+    console.error('Get sample courses error:', error);
+    res.status(500).json({ error: '获取课程列表失败' });
+  }
+});
+
 // 获取用户课程列表
 router.get('/courses/:userId', async (req, res) => {
   try {

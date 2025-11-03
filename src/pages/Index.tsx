@@ -1,25 +1,92 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, BookOpen, Video, Shield } from "lucide-react";
+import CourseCard from "@/components/CourseCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+
+interface Course {
+  id: string;
+  name: string;
+  description: string;
+  cover_image?: string;
+}
+
+const API_BASE_URL = 'http://localhost:3001/api/auth';
 
 const Index = () => {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // 轮播图图片列表
+  const carouselImages = [
+    "lunbo_img/1.png",
+    "lunbo_img/2.png",
+    "lunbo_img/3.png"
+  ];
 
   useEffect(() => {
-    // 检查本地存储的用户会话
+    // 检查用户是否已经登录
     const session = localStorage.getItem('user_session');
     if (session) {
       const parsedSession = JSON.parse(session);
-      // 检查会话是否过期
       if (Date.now() < parsedSession.expires_at) {
         navigate("/courses");
       } else {
-        // 会话过期，清除本地存储
         localStorage.removeItem('user_session');
       }
     }
+
+    // Fetch courses
+    const fetchCourses = async () => {
+      try {
+        // 由于这是首页，我们展示所有课程作为示例
+        // 在实际应用中可能需要根据业务需求调整
+        const response = await fetch(`${API_BASE_URL}/courses/sample`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch courses: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Received courses data:', data);
+        
+        // 确保数据格式正确
+        const formattedCourses = Array.isArray(data) ? data.map(course => ({
+          id: course.id.toString(),
+          name: course.name,
+          description: course.description || "",
+          cover_image: course.cover_image || undefined
+        })) : [];
+        
+        setCourses(formattedCourses);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+        // 如果API调用失败，可以显示一些默认课程或者空状态
+        setCourses([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourses();
   }, [navigate]);
 
   return (
@@ -39,23 +106,38 @@ const Index = () => {
       </header>
 
       <main>
-        <section className="container mx-auto px-4 py-20 text-center">
-          <div className="max-w-3xl mx-auto">
-            <div className="mb-8 inline-block">
-              <div className="bg-gradient-to-br from-primary to-accent p-6 rounded-3xl shadow-2xl">
-                <GraduationCap className="w-20 h-20 text-primary-foreground" />
-              </div>
-            </div>
-            <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              欢迎来到-在线培训平台
-            </h2>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              专业的在线学习管理系统，为您提供高质量的培训课程和学习资源
-            </p>
-            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg px-8 py-6">
-              立即开始学习
-            </Button>
-          </div>
+        <section className="container mx-auto px-4 py-12">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 3000,
+              }),
+            ]}
+            className="w-full"
+          >
+            <CarouselContent>
+              {carouselImages.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-elegant">
+                    <img
+                      src={image}
+                      alt={`轮播图 ${index + 1}`}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                      onError={(e) => {
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='300'%3E%3Crect width='800' height='300' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%23999'%3E图片加载失败%3C/text%3E%3C/svg%3E";
+                      }}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-8 h-12 w-12" />
+            <CarouselNext className="right-8 h-12 w-12" />
+          </Carousel>
         </section>
 
         <section className="container mx-auto px-4 py-16">
@@ -90,6 +172,45 @@ const Index = () => {
               </p>
             </div>
           </div>
+        </section>
+
+        <section className="container mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              精品课程
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              探索我们的专业课程体系，开启您的学习之旅
+            </p>
+          </div>
+          
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="h-48 w-full rounded-lg" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              ))}
+            </div>
+          ) : courses.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {courses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  name={course.name}
+                  description={course.description || ""}
+                  coverImage={course.cover_image || undefined}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">暂无课程数据</p>
+            </div>
+          )}
         </section>
       </main>
 
