@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CourseCardProps {
   name: string;
@@ -35,12 +34,6 @@ const CourseCard = ({ name, description, coverImage }: CourseCardProps) => {
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center text-sm text-primary font-medium group-hover:gap-2 transition-all">
-          <span>了解详情</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </div>
-      </CardContent>
     </Card>
   );
 };
