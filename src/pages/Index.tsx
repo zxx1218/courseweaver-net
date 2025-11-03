@@ -11,8 +11,8 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 
 interface Course {
   id: string;
@@ -25,6 +25,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   
   // 轮播图图片列表
   const carouselImages = [
@@ -34,6 +35,17 @@ const Index = () => {
     "/lunbo_img/4.jpg",
     "/lunbo_img/5.jpg",
   ];
+
+  // 自动轮播
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    const intervalId = setInterval(() => {
+      carouselApi.scrollNext();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [carouselApi]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -85,11 +97,7 @@ const Index = () => {
               align: "start",
               loop: true,
             }}
-            plugins={[
-              Autoplay({
-                delay: 3000,
-              }),
-            ]}
+            setApi={setCarouselApi}
             className="w-full max-w-5xl mx-auto"
           >
             <CarouselContent>
