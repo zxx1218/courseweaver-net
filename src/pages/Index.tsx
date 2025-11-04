@@ -77,7 +77,7 @@ const Index = () => {
       </header>
 
       <main>
-        <section className="container mx-auto px-4 py-12">
+        <section className="container mx-auto px-4 py-8">
           <Carousel
             opts={{
               align: "start",
@@ -111,7 +111,7 @@ const Index = () => {
           </Carousel>
         </section>
 
-        <section className="container mx-auto px-4 py-16">
+        <section className="container mx-auto px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-6 rounded-2xl bg-card shadow-sm hover:shadow-md transition-shadow">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -145,7 +145,7 @@ const Index = () => {
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-16">
+        <section className="container mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               精品课程
