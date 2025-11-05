@@ -77,7 +77,7 @@ const Index = () => {
       </header>
 
       <main>
-        <section className="container mx-auto px-4 py-8">
+        <section className="w-full py-8">
           <Carousel
             opts={{
               align: "start",
@@ -93,7 +93,7 @@ const Index = () => {
             <CarouselContent>
               {carouselImages.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-elegant">
+                  <div className="relative w-full aspect-[21/9] overflow-hidden">
                     <img
                       src={image}
                       alt={`轮播图 ${index + 1}`}
