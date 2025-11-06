@@ -123,7 +123,7 @@ const Index = () => {
             <CarouselContent>
               {carouselImages.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative w-full aspect-[21/9] overflow-hidden">
+                  <div className="relative w-full h-64 md:h-80 overflow-hidden">
                     <img
                       src={image}
                       alt={`轮播图 ${index + 1}`}
@@ -140,7 +140,6 @@ const Index = () => {
             <CarouselNext className="right-8 h-12 w-12" />
           </Carousel>
         </section>
-
         <section className="container mx-auto px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-6 rounded-2xl bg-card shadow-sm hover:shadow-md transition-shadow">
