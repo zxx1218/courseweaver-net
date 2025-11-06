@@ -8,7 +8,8 @@ const authRoutes = require('./routes/auth');
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const BACK_PORT = process.env.BACK_PORT; //启动端口
+const BACK_HOST = process.env.BACK_HOST; // 启动地址
 
 // 中间件
 app.use(cors());
@@ -22,6 +23,6 @@ app.get('/', (req, res) => {
   res.json({ message: 'CourseWeaver Backend API' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(BACK_PORT, BACK_HOST, () => {
+  console.log(`Server is running on ${BACK_HOST}:${BACK_PORT}`);
 });

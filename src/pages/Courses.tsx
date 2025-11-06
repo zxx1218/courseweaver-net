@@ -20,7 +20,7 @@ interface Course {
   cover_image: string | null;
 }
 
-const API_BASE_URL = 'http://localhost:3001/api/auth';
+const API_BASE_URL = import.meta.env.VITE_API_URL; // 后端接口地址
 
 const Courses = () => {
   const navigate = useNavigate();

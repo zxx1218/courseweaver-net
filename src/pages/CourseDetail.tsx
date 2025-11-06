@@ -24,7 +24,7 @@ interface Resource {
   file_path: string;
 }
 
-const API_BASE_URL = 'http://localhost:3001/api/auth';
+const API_BASE_URL = import.meta.env.VITE_API_URL; // 后端接口地址
 
 const CourseDetail = () => {
   const navigate = useNavigate();

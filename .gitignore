@@ -25,4 +25,3 @@ dist-ssr
 
 # 忽略 public 目录下的 resources 文件夹及其所有内容
 public/resources/
-public/images/

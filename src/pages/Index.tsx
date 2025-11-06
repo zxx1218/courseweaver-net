@@ -21,7 +21,7 @@ interface Course {
   cover_image?: string;
 }
 
-const API_BASE_URL = 'http://localhost:3001/api/auth';
+const API_BASE_URL = import.meta.env.VITE_API_URL; // 后端接口地址
 
 const Index = () => {
   const navigate = useNavigate();
@@ -30,9 +30,10 @@ const Index = () => {
   
   // 轮播图图片列表
   const carouselImages = [
-    "lunbo_img/1.png",
-    "lunbo_img/2.png",
-    "lunbo_img/3.png"
+    "lunbo_img/1.jpg",
+    "lunbo_img/2.jpg",
+    "lunbo_img/3.jpg",
+    "lunbo_img/4.jpg"
   ];
 
   useEffect(() => {
@@ -106,7 +107,7 @@ const Index = () => {
       </header>
 
       <main>
-        <section className="container mx-auto px-4 py-8">
+        <section className="w-full py-8">
           <Carousel
             opts={{
               align: "start",
@@ -122,7 +123,7 @@ const Index = () => {
             <CarouselContent>
               {carouselImages.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-elegant">
+                  <div className="relative w-full aspect-[21/9] overflow-hidden">
                     <img
                       src={image}
                       alt={`轮播图 ${index + 1}`}
