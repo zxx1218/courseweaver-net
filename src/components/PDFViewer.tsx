@@ -18,13 +18,28 @@ const PDFViewer = ({ url }: PDFViewerProps) => {
     // 禁用右键菜单
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       return false;
     };
 
+    // 禁用键盘快捷键
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.ctrlKey || e.metaKey) && 
+        (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P')
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
     iframe.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       iframe.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -58,17 +73,29 @@ const PDFViewer = ({ url }: PDFViewerProps) => {
   const viewerUrl = `${url}#toolbar=0&navpanes=0&scrollbar=0`;
 
   return (
-    <div ref={containerRef} className="relative w-full bg-muted rounded-lg overflow-hidden">
+    <div 
+      ref={containerRef} 
+      className="relative w-full bg-muted rounded-lg overflow-hidden select-none"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }}
+    >
       <iframe
         ref={iframeRef}
         src={viewerUrl}
         className={isFullscreen ? "w-full h-screen border-0" : "w-full h-[600px] border-0"}
         title="PDF查看器"
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }}
       />
       
       {/* 防止下载的提示 */}
-      <div className="absolute top-0 left-0 right-0 bg-primary/90 text-primary-foreground text-sm py-2 px-4 text-center flex items-center justify-between">
+      <div className="absolute top-0 left-0 right-0 bg-primary/90 text-primary-foreground text-sm py-2 px-4 text-center flex items-center justify-between z-10">
         <span>文档仅供在线查看，不支持下载</span>
         <Button
           variant="ghost"
@@ -89,13 +116,6 @@ const PDFViewer = ({ url }: PDFViewerProps) => {
           )}
         </Button>
       </div>
-      
-      {/* 防止下载的透明遮罩层 */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 1 }}
-        onContextMenu={(e) => e.preventDefault()}
-      />
     </div>
   );
 };

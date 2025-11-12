@@ -14,36 +14,57 @@ const VideoPlayer = ({ url }: VideoPlayerProps) => {
     // 禁用右键菜单
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       return false;
     };
 
+    // 禁用键盘快捷键（如Ctrl+S保存）
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.ctrlKey || e.metaKey) && 
+        (e.key === 's' || e.key === 'S')
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
     video.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       video.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
   return (
-    <div className="relative w-full bg-black rounded-lg overflow-hidden">
+    <div 
+      className="relative w-full bg-black rounded-lg overflow-hidden select-none"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }}
+    >
       <video
         ref={videoRef}
         className="w-full aspect-video"
         controls
-        controlsList="nodownload"
+        controlsList="nodownload noremoteplayback"
         disablePictureInPicture
-        onContextMenu={(e) => e.preventDefault()}
+        disableRemotePlayback
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }}
       >
         <source src={url} type="video/mp4" />
         <source src={url} type="video/webm" />
         您的浏览器不支持视频播放
       </video>
-      
-      {/* 防止下载的透明遮罩层 */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 1 }}
-      />
     </div>
   );
 };
