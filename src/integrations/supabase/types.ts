@@ -57,8 +57,10 @@ export type Database = {
           file_path: string | null
           file_url: string
           id: string
+          is_folder: boolean | null
           name: string
           order_index: number | null
+          parent_id: string | null
           type: string
         }
         Insert: {
@@ -67,8 +69,10 @@ export type Database = {
           file_path?: string | null
           file_url: string
           id?: string
+          is_folder?: boolean | null
           name: string
           order_index?: number | null
+          parent_id?: string | null
           type: string
         }
         Update: {
@@ -77,8 +81,10 @@ export type Database = {
           file_path?: string | null
           file_url?: string
           id?: string
+          is_folder?: boolean | null
           name?: string
           order_index?: number | null
+          parent_id?: string | null
           type?: string
         }
         Relationships: [
@@ -87,6 +93,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_resources_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "course_resources"
             referencedColumns: ["id"]
           },
         ]
