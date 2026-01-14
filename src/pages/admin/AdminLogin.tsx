@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Shield, Loader2 } from "lucide-react";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -20,43 +20,55 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      // 登录验证
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // 1. 从 users 表验证用户名和密码
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("id, username, password")
+        .eq("username", username)
+        .maybeSingle();
 
-      if (authError) {
+      if (userError) {
+        console.error("查询用户失败:", userError);
         toast({
           variant: "destructive",
           title: "登录失败",
-          description: authError.message,
+          description: "系统错误，请稍后重试",
         });
         setLoading(false);
         return;
       }
 
-      if (!authData.user) {
+      if (!userData) {
         toast({
           variant: "destructive",
           title: "登录失败",
-          description: "无法获取用户信息",
+          description: "用户名不存在",
         });
         setLoading(false);
         return;
       }
 
-      // 检查是否是管理员
+      // 验证密码
+      if (userData.password !== password) {
+        toast({
+          variant: "destructive",
+          title: "登录失败",
+          description: "密码错误",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 2. 检查该用户是否有管理员角色
       const { data: roleData, error: roleError } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", authData.user.id)
+        .eq("user_id", userData.id)
         .eq("role", "admin")
         .maybeSingle();
 
       if (roleError) {
         console.error("检查管理员角色失败:", roleError);
-        await supabase.auth.signOut();
         toast({
           variant: "destructive",
           title: "登录失败",
@@ -67,8 +79,6 @@ const AdminLogin = () => {
       }
 
       if (!roleData) {
-        // 不是管理员，退出登录
-        await supabase.auth.signOut();
         toast({
           variant: "destructive",
           title: "访问被拒绝",
@@ -76,6 +86,65 @@ const AdminLogin = () => {
         });
         setLoading(false);
         return;
+      }
+
+      // 3. 使用 Supabase Auth 登录（使用 username 作为邮箱格式）
+      const fakeEmail = `${username}@admin.local`;
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: fakeEmail,
+        password: password,
+      });
+
+      if (authError) {
+        // 如果 auth 用户不存在，尝试创建
+        if (authError.message.includes("Invalid login credentials")) {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: fakeEmail,
+            password: password,
+            options: {
+              data: {
+                user_id: userData.id,
+                username: username,
+              }
+            }
+          });
+
+          if (signUpError) {
+            console.error("创建认证用户失败:", signUpError);
+            toast({
+              variant: "destructive",
+              title: "登录失败",
+              description: "认证系统错误",
+            });
+            setLoading(false);
+            return;
+          }
+
+          // 重新登录
+          const { error: retryError } = await supabase.auth.signInWithPassword({
+            email: fakeEmail,
+            password: password,
+          });
+
+          if (retryError) {
+            console.error("重新登录失败:", retryError);
+            toast({
+              variant: "destructive",
+              title: "登录失败",
+              description: "请稍后重试",
+            });
+            setLoading(false);
+            return;
+          }
+        } else {
+          toast({
+            variant: "destructive",
+            title: "登录失败",
+            description: authError.message,
+          });
+          setLoading(false);
+          return;
+        }
       }
 
       // 登录成功，跳转到管理后台
@@ -111,13 +180,13 @@ const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="username">用户名</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                placeholder="请输入管理员用户名"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 disabled={loading}
               />
